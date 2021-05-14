@@ -20,7 +20,7 @@ class App {
     fun doIt(args: Array<String>) {
         val dslSandwich = sandwich {
             with type "toasted"
-            bread = "baguette"
+            bread = "baguette" // with bread "ciabatta"
 
             fillings {
                 +"StandardFilling"
@@ -44,7 +44,14 @@ class App {
                 side("French Fries")
                 side("Coca Cola 0.5")
             }
-
+            sideOrders("second") {
+                side("Rice")
+                side("Water (sparkling)")
+            }
+            sideOrders("dessert") {
+                side("ice cream (vanilla)")
+                side("chocolate cake")
+            }
         }
 
         println(dslSandwich.receipt())

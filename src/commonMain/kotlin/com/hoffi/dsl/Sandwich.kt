@@ -9,12 +9,12 @@ fun sandwich(order: Sandwich.() -> Unit): Sandwich =
 
 @DslSandwich
 class Sandwich {
-    public val with = this
+    val with = this
     private var type = DEFAULT_TYPE
-    public var bread: String = "white"
-    internal val fillings = Fillings()
+    var bread: String = "white"
+    private val fillings = Fillings()
     private val dressings = Dressings()
-    private val sides = SideOrders()
+    private val sides = mutableMapOf<String, SideOrders>()
 
     infix fun type(sandwichType: String) {
         type = sandwichType
@@ -39,8 +39,9 @@ class Sandwich {
         dressings.toAdd()
         return this
     }
-    fun sideOrders(sideOrderToAdd: SideOrders.() -> Unit): Sandwich {
-        sides.sideOrderToAdd()
+    fun sideOrders(name: String = SideOrders.DEFAULT, sideOrderToAdd: SideOrders.() -> Unit): Sandwich {
+        val so = sides.getOrPut(name) { val so = SideOrders() ; sides[name] = so; so }
+        so.sideOrderToAdd()
         return this
     }
     fun construct(): Sandwich {
@@ -51,7 +52,15 @@ class Sandwich {
         var receipt = "$type sandwich on $bread bread"
         receipt += "\n\t" + fillings.receipt()
         receipt += "\n\t" + dressings.receipt()
-        receipt += "\n\t" + sides.receipt()
+        sides.forEach { (name, so) ->
+            when (name) {
+                SideOrders.DEFAULT -> receipt += "\n\twith sides: ${so.receipt()}"
+                else -> {
+                    receipt += "\n\twith \"$name\" sides:"
+                    receipt += "\n\t\t" + so.receipt()
+                }
+            }
+        }
         return "Sandwich Receipt\n$receipt"
     }
 
@@ -62,11 +71,12 @@ class Sandwich {
 class Fillings {
     private val fillings = mutableListOf<String>()
 
+    // operator "unary +" overload as extension function on String if method body (this) inside Fillings class
     operator fun String.unaryPlus() = fillings.add(this)
 
     fun receipt(): String {
         return if (fillings.isEmpty()) " with no fillings "
-        else " with fillings: " + fillings.joinToString(", ")
+        else "with fillings: " + fillings.joinToString(", ")
     }
 
     fun set(listOfFillings: List<String>) {
@@ -84,11 +94,12 @@ class Fillings {
 class Dressings {
     private val dressings = mutableListOf<String>()
 
+    // operator "unary +" overload as extension function on String if method body (this) inside Dressings class
     operator fun String.unaryPlus() = dressings.add(this)
 
     fun receipt(): String {
         return if (dressings.isEmpty()) " with no dressings "
-        else " with dressings: " + dressings.joinToString(", ")
+        else "with dressings: " + dressings.joinToString(", ")
     }
 
     fun set(listOfDressings: List<String>) {
@@ -101,13 +112,17 @@ class Dressings {
 class SideOrders {
     private val sides = mutableListOf<String>()
 
+    companion object {
+        const val DEFAULT = "default"
+    }
+
     fun side(sideOrderToAdd: String) {
         sides.add(sideOrderToAdd)
     }
 
     fun receipt(): String {
         return if (sides.isEmpty()) " with no sides "
-        else " with sides: " + sides.joinToString(", ")
+        else sides.joinToString(", ")
     }
 
     fun set(listOfSides: List<String>) {
