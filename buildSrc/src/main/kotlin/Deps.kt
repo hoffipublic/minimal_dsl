@@ -78,7 +78,7 @@ object Deps {
     object JetBrains {
         object Kotlin {
             // __KOTLIN_VERSION__
-            val VERSION = "1.4.32"
+            val VERSION = "1.5.0"
             val GROUPLEADERDEP = Dep.from("org.jetbrains.kotlin:kotlin-gradle-plugin:$VERSION")
 
             val kotlin = GROUPLEADERDEP

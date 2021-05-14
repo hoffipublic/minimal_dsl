@@ -1,4 +1,4 @@
-package com.hoffi.dsl
+package com.hoffi.dsl.sandwich
 
 const val DEFAULT_TYPE = "<default>"
 

@@ -1,5 +1,7 @@
 package com.hoffi.dsl
 
+import com.hoffi.dsl.sandwich.sandwich
+
 // call as `https://github.com/holgerbrandl/kscript` with current Dir = dir of this file and
 // kscript App.kt
 
@@ -18,6 +20,12 @@ fun main(args: Array<String>) {
 
 class App {
     fun doIt(args: Array<String>) {
+
+        val compiledSandwich = CompileDSL.compileDSL()
+        println(compiledSandwich.receipt())
+        println("\n=======================================================\n")
+
+
         val dslSandwich = sandwich {
             with type "toasted"
             bread = "baguette" // with bread "ciabatta"
