@@ -1,3 +1,5 @@
+import Global.jvmTarget
+
 plugins {
     kotlin("jvm") version Deps.JetBrains.Kotlin.VERSION
     id("com.github.johnrengelman.shadow") version Deps.Plugins.Shadow.VERSION
@@ -7,15 +9,10 @@ plugins {
 group = "com.hoffi"
 version = "1.0.0"
 val artifactName by extra { project.name.toLowerCase() }
-val theMainClass by extra { "com.hoffi.dsl.App" }
+val theMainClass by extra { "com.hoffi.dsl.AppKt" }
 
 repositories {
     mavenCentral()
-}
-
-application {
-    mainClass.set(theMainClass + "Kt")
-    println("main Application: ${mainClass.get()}")
 }
 
 dependencies {
@@ -31,23 +28,28 @@ dependencies {
     testImplementation(kotlin("test-annotations-common"))
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+application {
+    mainClass.set(theMainClass)
 }
 
 tasks {
     withType<Jar> {
         archiveBaseName.set(artifactName)
     }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = java.targetCompatibility.majorVersion
+    shadowJar {
+        manifest { attributes["Main-Class"] = theMainClass }
+        archiveClassifier.set("fat")
+        mergeServiceFiles()
+        minimize()
+    }
+//    val build by existing {
+//        finalizedBy(shadowCreate)
+//    }
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions{
+            jvmTarget = JavaVersion.VERSION_11.toString()
             //Will retain parameter names for Java reflection
             javaParameters = true
-            //freeCompilerArgs = freeCompilerArgs + listOf(
-            //    "--Xjavac-arguments=-Xlint:-deprecation"
-            //)
         }
     }
 
@@ -99,18 +101,15 @@ tasks {
         // listen to standard out and standard error of the test JVM(s)
         // onOutput { descriptor, event -> logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message ) }
     }
+}
 
-    val shadowCreate by creating(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class) {
-        manifest {
-            attributes["Main-Class"] = theMainClass + "Kt"
-        }
-        mergeServiceFiles()
-
-        //archiveClassifier.set("fat")
-    }
-    val build by existing {
-        dependsOn(shadowCreate)
-    }
+// Helper tasks to speed up things and don't waste time
+//=====================================================
+// 'c'ompile 'c'ommon
+val cc by tasks.registering {
+    dependsOn(
+        ":compileKotlin",
+        ":compileTestKotlin")
 }
 
 // ################################################################################################
