@@ -1,5 +1,3 @@
-import Global.jvmTarget
-
 plugins {
     kotlin("jvm") version Deps.JetBrains.Kotlin.VERSION
     id("com.github.johnrengelman.shadow") version Deps.Plugins.Shadow.VERSION
@@ -93,7 +91,7 @@ tasks {
                         ConsoleColor.RED,
                         result.resultType.name
                     ) else colorString(ConsoleColor.GREEN, result.resultType.name)
-                    println("Test Results: ${outcome} (total: ${result.testCount} tests, ${result.successfulTestCount} successes, $fails, ${result.skippedTestCount} skipped)\n")
+                    println("Test Results: $outcome (total: ${result.testCount} tests, ${result.successfulTestCount} successes, $fails, ${result.skippedTestCount} skipped)\n")
                 }
             }
         })
@@ -120,8 +118,8 @@ tasks.register("printClasspath") {
     description = "print classpath"
     doLast {
         // filters only existing and non-empty dirs
-        project.getConfigurations().getByName("runtimeClasspath").getFiles()
-            .filter { (it.isDirectory() && it.listFiles().isNotEmpty()) || it.isFile }
+        project.configurations.getByName("runtimeClasspath").files
+            .filter { it.isDirectory && (it?.listFiles()?.isNotEmpty() ?: false) || it.isFile }
             .forEach{ println(it) }
     }
 }
