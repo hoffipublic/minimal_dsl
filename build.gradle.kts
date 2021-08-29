@@ -6,7 +6,7 @@ plugins {
 
 group = "com.hoffi"
 version = "1.0.0"
-val artifactName by extra { project.name.toLowerCase() }
+val artifactName by extra { project.name.toLowerCase().replace('_', '-') }
 val theMainClass by extra { "com.hoffi.dsl.AppKt" }
 
 repositories {
@@ -113,6 +113,7 @@ val cc by tasks.registering {
 // ################################################################################################
 // #####    pure informational stuff on stdout    #################################################
 // ################################################################################################
+tasks.register<CheckVersionsTask>("checkVersions") // implemented in buildSrc/src/main/kotlin/Deps.kt
 tasks.register("printClasspath") {
     group = "misc"
     description = "print classpath"
@@ -122,4 +123,33 @@ tasks.register("printClasspath") {
             .filter { it.isDirectory && (it?.listFiles()?.isNotEmpty() ?: false) || it.isFile }
             .forEach{ println(it) }
     }
+}
+tasks.register("versionsPrint") {
+    group = "misc"
+    description = "extract spring boot versions from dependency jars"
+    doLast {
+        val foreground = ConsoleColor.YELLOW
+        val background = ConsoleColor.DEFAULT
+        val shadowJar by tasks.getting(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class)
+        printlnColor(foreground, "  fat/uber jar: ${shadowJar.archiveFileName.get()}", background)
+        printlnColor(foreground, "Gradle version: " + project.gradle.gradleVersion, background)
+        printColor(foreground, "Kotlin version: " + kotlin.coreLibrariesVersion) ; if (kotlin.coreLibrariesVersion != Deps.JetBrains.Kotlin.VERSION) printColor(ConsoleColor.RED, " ( != ${Deps.JetBrains.Kotlin.VERSION} )")
+        println()
+        printlnColor(foreground, "javac  version: " + org.gradle.internal.jvm.Jvm.current(), background) // + " with compiler args: " + options.compilerArgs, backgroundColor = ConsoleColor.DARK_GRAY)
+        printlnColor(foreground, "       srcComp: " + java.sourceCompatibility, background)
+        printlnColor(foreground, "       tgtComp: " + java.targetCompatibility, background)
+        printlnColor(foreground, "versions of core dependencies:", background)
+        val regex = Regex(pattern = "^(spring-cloud-starter|spring-boot-starter|micronaut-core|kotlin-stdlib-jdk[0-9-]+|foundation-desktop)-[0-9].*$")
+        if (subprojects.size > 0) {
+            configurations.compileClasspath.get().map { it.nameWithoutExtension }.filter { it.matches(regex) }
+                .forEach { printlnColor(foreground, String.format("%-25s: %s", project.name, it), background) }
+        } else {
+            configurations.compileClasspath.get().map { it.nameWithoutExtension }.filter { it.matches(regex) }
+                .forEach { printlnColor(foreground, "  $it", background) }
+        }
+    }
+}
+val build by tasks.existing {
+    val versionsPrint by tasks.existing
+    finalizedBy(versionsPrint)
 }
