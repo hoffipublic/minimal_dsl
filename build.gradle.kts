@@ -30,6 +30,13 @@ application {
     mainClass.set(theMainClass)
 }
 
+// Kotlin compilation tasks will also use this
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
 tasks {
     withType<Jar> {
         archiveBaseName.set(artifactName)
