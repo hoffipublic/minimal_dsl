@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version Deps.JetBrains.Kotlin.VERSION
+    kotlin("jvm") version Deps.JetBrains.VERSION_Kotlin
     id("com.github.johnrengelman.shadow") version Deps.Plugins.Shadow.VERSION
     application
 }
@@ -15,11 +15,11 @@ repositories {
 
 dependencies {
     //implementation("io.github.microutils:kotlin-logging:2.0.6")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Deps.Misc.DATETIME.VERSION}")
-    implementation("com.github.ajalt.clikt:clikt:${Deps.Misc.CLIKT.VERSION}")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Deps.Misc.KotlinxDatetime.version}")
+    implementation("com.github.ajalt.clikt:clikt:${Deps.Misc.Clikt.version}")
     //implementation(kotlin("reflect"))
 
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:${Deps.JetBrains.Kotlin.VERSION}")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:${Deps.JetBrains.VERSION_Kotlin}")
     //runtimeOnly("net.java.dev.jna:jna:5.8.0")
 
     testImplementation(kotlin("test-common"))
@@ -140,7 +140,7 @@ tasks.register("versionsPrint") {
         val shadowJar by tasks.getting(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class)
         printlnColor(foreground, "  fat/uber jar: ${shadowJar.archiveFileName.get()}", background)
         printlnColor(foreground, "Gradle version: " + project.gradle.gradleVersion, background)
-        printColor(foreground, "Kotlin version: " + kotlin.coreLibrariesVersion) ; if (kotlin.coreLibrariesVersion != Deps.JetBrains.Kotlin.VERSION) printColor(ConsoleColor.RED, " ( != ${Deps.JetBrains.Kotlin.VERSION} )")
+        printColor(foreground, "Kotlin version: " + kotlin.coreLibrariesVersion) ; if (kotlin.coreLibrariesVersion != Deps.JetBrains.VERSION_Kotlin) printColor(ConsoleColor.RED, " ( != ${Deps.JetBrains.VERSION_Kotlin} )")
         println()
         printlnColor(foreground, "javac  version: " + org.gradle.internal.jvm.Jvm.current(), background) // + " with compiler args: " + options.compilerArgs, backgroundColor = ConsoleColor.DARK_GRAY)
         printlnColor(foreground, "       srcComp: " + java.sourceCompatibility, background)
