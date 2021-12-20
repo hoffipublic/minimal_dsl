@@ -30,10 +30,10 @@ application {
     mainClass.set(theMainClass)
 }
 
-// Kotlin compilation tasks will also use this
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+kotlin {
+    jvmToolchain {
+        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
+        vendor.set(JvmVendorSpec.ADOPTOPENJDK)
     }
 }
 
