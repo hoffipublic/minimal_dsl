@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version Deps.JetBrains.VERSION_Kotlin
-    id("com.github.johnrengelman.shadow") version Deps.Plugins.Shadow.VERSION
+    kotlin("jvm") version BuildSrcGlobal.VersionKotlin
+    id("com.github.johnrengelman.shadow") version PluginDeps.PluginShadow.version
     application
 }
 
@@ -15,11 +15,11 @@ repositories {
 
 dependencies {
     //implementation("io.github.microutils:kotlin-logging:2.0.6")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Deps.Misc.KotlinxDatetime.version}")
-    implementation("com.github.ajalt.clikt:clikt:${Deps.Misc.Clikt.version}")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Deps.KotlinxDatetime.version}")
+    implementation("com.github.ajalt.clikt:clikt:${Deps.Clikt.version}")
     //implementation(kotlin("reflect"))
 
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:${Deps.JetBrains.VERSION_Kotlin}")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:${BuildSrcGlobal.VersionKotlin}")
     //runtimeOnly("net.java.dev.jna:jna:5.8.0")
 
     testImplementation(kotlin("test-common"))
@@ -32,8 +32,8 @@ application {
 
 kotlin {
     jvmToolchain {
-        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
-        vendor.set(JvmVendorSpec.ADOPTOPENJDK)
+        (this as JavaToolchainSpec).languageVersion.set(BuildSrcGlobal.JavaLanguageVersion)
+        vendor.set(BuildSrcGlobal.jvmVendor)
     }
 }
 
@@ -93,11 +93,11 @@ tasks {
                     println("===================")
                     val failsDefault = "${result.failedTestCount} failures"
                     val fails =
-                        if (result.failedTestCount > 0) colorString(ConsoleColor.RED, failsDefault) else failsDefault
-                    val outcome = if (result.resultType.name == "FAILURE") colorString(
-                        ConsoleColor.RED,
+                        if (result.failedTestCount > 0) BuildSrcGlobal.colorString(BuildSrcGlobal.ConsoleColor.RED, failsDefault) else failsDefault
+                    val outcome = if (result.resultType.name == "FAILURE") BuildSrcGlobal.colorString(
+                        BuildSrcGlobal.ConsoleColor.RED,
                         result.resultType.name
-                    ) else colorString(ConsoleColor.GREEN, result.resultType.name)
+                    ) else BuildSrcGlobal.colorString(BuildSrcGlobal.ConsoleColor.GREEN, result.resultType.name)
                     println("Test Results: $outcome (total: ${result.testCount} tests, ${result.successfulTestCount} successes, $fails, ${result.skippedTestCount} skipped)\n")
                 }
             }
@@ -135,24 +135,25 @@ tasks.register("versionsPrint") {
     group = "misc"
     description = "extract spring boot versions from dependency jars"
     doLast {
-        val foreground = ConsoleColor.YELLOW
-        val background = ConsoleColor.DEFAULT
+        val foreground = BuildSrcGlobal.ConsoleColor.YELLOW
+        val background = BuildSrcGlobal.ConsoleColor.DEFAULT
         val shadowJar by tasks.getting(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class)
-        printlnColor(foreground, "  fat/uber jar: ${shadowJar.archiveFileName.get()}", background)
-        printlnColor(foreground, "Gradle version: " + project.gradle.gradleVersion, background)
-        printColor(foreground, "Kotlin version: " + kotlin.coreLibrariesVersion) ; if (kotlin.coreLibrariesVersion != Deps.JetBrains.VERSION_Kotlin) printColor(ConsoleColor.RED, " ( != ${Deps.JetBrains.VERSION_Kotlin} )")
+        BuildSrcGlobal.printlnColor(foreground, "  fat/uber jar: ${shadowJar.archiveFileName.get()}", background)
+        BuildSrcGlobal.printlnColor(foreground, "Gradle version: " + project.gradle.gradleVersion, background)
+        BuildSrcGlobal.printColor(foreground, "Kotlin version: " + kotlin.coreLibrariesVersion) ; if (kotlin.coreLibrariesVersion != BuildSrcGlobal.VersionKotlin) BuildSrcGlobal.printColor(
+        BuildSrcGlobal.ConsoleColor.RED, " ( != ${BuildSrcGlobal.VersionKotlin} )")
         println()
-        printlnColor(foreground, "javac  version: " + org.gradle.internal.jvm.Jvm.current(), background) // + " with compiler args: " + options.compilerArgs, backgroundColor = ConsoleColor.DARK_GRAY)
-        printlnColor(foreground, "       srcComp: " + java.sourceCompatibility, background)
-        printlnColor(foreground, "       tgtComp: " + java.targetCompatibility, background)
-        printlnColor(foreground, "versions of core dependencies:", background)
+        BuildSrcGlobal.printlnColor(foreground, "javac  version: " + org.gradle.internal.jvm.Jvm.current(), background) // + " with compiler args: " + options.compilerArgs, backgroundColor = ConsoleColor.DARK_GRAY)
+        BuildSrcGlobal.printlnColor(foreground, "       srcComp: " + java.sourceCompatibility, background)
+        BuildSrcGlobal.printlnColor(foreground, "       tgtComp: " + java.targetCompatibility, background)
+        BuildSrcGlobal.printlnColor(foreground, "versions of core dependencies:", background)
         val regex = Regex(pattern = "^(spring-cloud-starter|spring-boot-starter|micronaut-core|kotlin-stdlib-jdk[0-9-]+|foundation-desktop)-[0-9].*$")
         if (subprojects.size > 0) {
             configurations.compileClasspath.get().map { it.nameWithoutExtension }.filter { it.matches(regex) }
-                .forEach { printlnColor(foreground, String.format("%-25s: %s", project.name, it), background) }
+                .forEach { BuildSrcGlobal.printlnColor(foreground, String.format("%-25s: %s", project.name, it), background) }
         } else {
             configurations.compileClasspath.get().map { it.nameWithoutExtension }.filter { it.matches(regex) }
-                .forEach { printlnColor(foreground, "  $it", background) }
+                .forEach { BuildSrcGlobal.printlnColor(foreground, "  $it", background) }
         }
     }
 }
