@@ -9,7 +9,8 @@ interface ICompileDSL {
 }
 object CompileDSL : ICompileDSL {
     override fun compileDSL() : Sandwich {
-        val engine = ScriptEngineManager().getEngineByExtension("kts") ?: throw Exception("kts script engine not found")
+        //val engine = ScriptEngineManager().getEngineByExtension("kts") ?: throw Exception("kts script engine not found")
+        val engine = ScriptEngineManager().getEngineByName("kotlin")
         println(engine.eval("21 + 21"))
         val dslFileContent = File("./Sandwich.kts").readText()
         val script = """

@@ -19,6 +19,7 @@ dependencies {
     implementation("com.github.ajalt.clikt:clikt:${Deps.Clikt.version}")
     //implementation(kotlin("reflect"))
 
+    runtimeOnly("org.jetbrains.kotlin:kotlin-main-kts:${BuildSrcGlobal.VersionKotlin}")
     runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:${BuildSrcGlobal.VersionKotlin}")
     //runtimeOnly("net.java.dev.jna:jna:5.8.0")
 
