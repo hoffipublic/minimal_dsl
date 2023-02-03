@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm") version BuildSrcGlobal.VersionKotlin
-    id("com.github.johnrengelman.shadow") version PluginDeps.PluginShadow.version
+    id("com.github.johnrengelman.shadow") version "shadow".pluginVersion()
     application
 }
 
@@ -15,8 +15,8 @@ repositories {
 
 dependencies {
     //implementation("io.github.microutils:kotlin-logging:2.0.6")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Deps.KotlinxDatetime.version}")
-    implementation("com.github.ajalt.clikt:clikt:${Deps.Clikt.version}")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime".depAndVersion())
+    implementation("com.github.ajalt.clikt:clikt".depAndVersion())
     //implementation(kotlin("reflect"))
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-main-kts:${BuildSrcGlobal.VersionKotlin}")
@@ -50,7 +50,6 @@ tasks {
 //    }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions{
-            jvmTarget = JavaVersion.VERSION_11.toString()
             //Will retain parameter names for Java reflection
             javaParameters = true
         }
