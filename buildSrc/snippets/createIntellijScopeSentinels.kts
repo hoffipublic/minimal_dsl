@@ -24,10 +24,12 @@
  * If you _then_ add folders / files matching the above scope names
  * you can see more clearly which "area" of code in the folder structure you are just looking at the moment .
  */
-tasks.register("createIntellijScopeSentinels") {
+val createIntellijScopeSentinels = tasks.register("createIntellijScopeSentinels") {
     doLast {
         project.allprojects.forEach { prj ->
-            var d: File
+            var relProjectDirString = prj.projectDir.toString().removePrefix(rootProject.projectDir.toString())
+            if (relProjectDirString.isBlank()) { relProjectDirString = "ROOT" } else { relProjectDirString = relProjectDirString.removePrefix("/") }
+            println("  in project: $relProjectDirString ...")
             val suffix = if (prj.name == rootProject.name) {
                 "ROOT"
             } else {
@@ -36,47 +38,48 @@ tasks.register("createIntellijScopeSentinels") {
             prj.pluginManager.let { when {
                 it.hasPlugin("org.jetbrains.kotlin.jvm") -> {
                     if (prj.name != rootProject.name) {
-                        d = mkdir("${prj.name}/01__$suffix")
-                        File(d, ".gitkeep").createNewFile()
-                        File(prj.name, "ZZ__$suffix").createNewFile()
+                        val dir = mkdir("${prj.projectDir}/01__$suffix")
+                        File(dir, ".gitkeep").createNewFile()
+                        File(prj.projectDir, "ZZ__$suffix").createNewFile()
                     }
                     prj.sourceSets.forEach { ss: SourceSet ->
                         val ssDir = if (prj.name == rootProject.name) {
                             File("src/${ss.name}")
                         } else {
-                            File("${prj.name}/src/${ss.name}")
+                            File("${prj.projectDir}/src/${ss.name}")
                         }
                         if (ssDir.exists()) {
                             val mName = ss.name.capitalize()
-                            d = mkdir("$ssDir/_src${mName}_$suffix")
-                            File(d, ".gitkeep").createNewFile()
+                            val dir = mkdir("$ssDir/_src${mName}_$suffix")
+                            File(dir, ".gitkeep").createNewFile()
                             File(ssDir, "ZZsrc${mName}_$suffix").createNewFile()
                         }
                     }
                 }
                 it.hasPlugin("org.jetbrains.kotlin.multiplatform") -> {
                     if (prj.name != rootProject.name) {
-                        d = mkdir("${prj.name}/01__$suffix")
-                        File(d, ".gitkeep").createNewFile()
-                        File(prj.name, "ZZ__$suffix").createNewFile()
+                        val dir = mkdir("${prj.projectDir}/01__$suffix")
+                        File(dir, ".gitkeep").createNewFile()
+                        File(prj.projectDir, "ZZ__$suffix").createNewFile()
                     }
-                    prj.kotlin.sourceSets.forEach { ss: org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet ->
+                    prj.kotlin.sourceSets.forEach { sourceSet ->
                         val ssDir = if (prj.name == rootProject.name) {
-                            File("src/${ss.name}")
+                            File("src/${sourceSet.name}")
                         } else {
-                            File("${prj.name}/src/${ss.name}")
+                            File("${prj.projectDir}/src/${sourceSet.name}")
                         }
                         if (ssDir.exists()) {
-                            if (ss.name.endsWith("Main")) {
-                                val mName = ss.name.removeSuffix("Main").capitalize()
-                                d = mkdir("$ssDir/_src${mName}_$suffix")
-                                File(d, ".gitkeep").createNewFile()
+                            if (sourceSet.name.endsWith("Main")) {
+                                val mName = sourceSet.name.removeSuffix("Main").capitalize()
+                                val dir = mkdir("$ssDir/_src${mName}_$suffix")
+                                File(dir, ".gitkeep").createNewFile()
                                 File(ssDir, "ZZsrc${mName}_$suffix").createNewFile()
                             }
                         }
                     }
                 }
             }}
+            println("  in project: $relProjectDirString ok.")
         }
     }
 }

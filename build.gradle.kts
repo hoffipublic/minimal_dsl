@@ -52,56 +52,12 @@ tasks {
         kotlinOptions{
             //Will retain parameter names for Java reflection
             javaParameters = true
+            kotlinOptions.freeCompilerArgs = listOf("-Xcontext-receivers")
         }
     }
 
     withType<Test> {
-        // classpath += developmentOnly
-
-        useJUnitPlatform {
-            //includeEngines("junit-jupiter", "spek2")
-            // includeTags "fast"
-            // excludeTags "app", "integration", "messaging", "slow", "trivial"
-        }
-        failFast = false
-        ignoreFailures = false
-        // reports.html.isEnabled = true
-
-        testLogging {
-            showStandardStreams = true
-            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-            events = setOf(
-                org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
-                org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
-                org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
-            ) //, STARTED //, standardOut, standardError)
-        }
-
-        addTestListener(object : TestListener {
-            override fun beforeTest(descriptor: TestDescriptor?) {
-                logger.lifecycle("Running $descriptor")
-            }
-
-            override fun beforeSuite(p0: TestDescriptor?) = Unit
-            override fun afterTest(desc: TestDescriptor, result: TestResult) = Unit
-            override fun afterSuite(desc: TestDescriptor, result: TestResult) {
-                if (desc.parent == null) { // will match the outermost suite
-                    println("\nTotal Test Results:")
-                    println("===================")
-                    val failsDefault = "${result.failedTestCount} failures"
-                    val fails =
-                        if (result.failedTestCount > 0) BuildSrcGlobal.colorString(BuildSrcGlobal.ConsoleColor.RED, failsDefault) else failsDefault
-                    val outcome = if (result.resultType.name == "FAILURE") BuildSrcGlobal.colorString(
-                        BuildSrcGlobal.ConsoleColor.RED,
-                        result.resultType.name
-                    ) else BuildSrcGlobal.colorString(BuildSrcGlobal.ConsoleColor.GREEN, result.resultType.name)
-                    println("Test Results: $outcome (total: ${result.testCount} tests, ${result.successfulTestCount} successes, $fails, ${result.skippedTestCount} skipped)\n")
-                }
-            }
-        })
-
-        // listen to standard out and standard error of the test JVM(s)
-        // onOutput { descriptor, event -> logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message ) }
+        buildSrcJvmTestConfig()
     }
 }
 

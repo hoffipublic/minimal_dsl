@@ -1,6 +1,6 @@
 package com.hoffi.dsl
 
-import com.hoffi.dsl.sandwich.sandwich
+import com.hoffi.dsl.sandwich.*
 
 // call as `https://github.com/holgerbrandl/kscript` with current Dir = dir of this file and
 // kscript App.kt
@@ -19,6 +19,7 @@ fun main(args: Array<String>) {
 }
 
 class App {
+    @Suppress("unused")
     fun doIt(args: Array<String>) {
 
         val compiledSandwich = CompileDSL.compileDSL()
@@ -29,6 +30,33 @@ class App {
         val dslSandwich = sandwich {
             with type "toasted"
             bread = "baguette" // with bread "ciabatta"
+
+
+            onlyContext_A {// this: IA_Context ->
+                aFun()
+             // bFun()         // unresolved reference, as it doesn't exist, because we are in IA_Context here
+                a_contextFun()
+             // b_contextFun() // no required context receiver found: Cxt { context(IB_Context) ... }
+                a_extFun()
+             // b_extFun()     // Unresolved reference. None of the following candidates is applicable because of receiver type mismatch
+            }
+            onlyContext_B {// this: IB_Context ->
+             // aFun()         // unresolved reference, as it doesn't exist, because we are in IA_Context here
+                bFun()
+             // a_contextFun() // no required context receiver found: Cxt { context(IA_Context) ... }
+                b_contextFun()
+             // a_extFun()     // Unresolved reference. None of the following candidates is applicable because of receiver type mismatch
+                b_extFun()
+            }
+            bothContexts {// this: IAB_Context ->
+                aFun()
+                bFun()
+                a_contextFun()
+                b_contextFun()
+                a_extFun()
+                b_extFun()
+            }
+
 
             fillings {
                 +"StandardFilling"
