@@ -2,37 +2,37 @@ package com.hoffi.dsl.sandwich
 
 // defining methods that can be called
 // on dsl blocks/closures, e.g.:
-//   fun onlyContext_A(a_contextBlock: IA_Context.() -> Unit): Sandwich {
+//   fun onlyContext_A(a_contextBlock: IA_Ifc.() -> Unit): Sandwich {
 //       bothABObj.apply(a_contextBlock)
 //       return this
 //   }
-interface IA_Context {
-    val a_contextObject: AObj
+interface IA_Ifc {
+    val a_IfcObject: AImpl
     fun aFun(): String
 }
-interface IB_Context {
-    val b_contextObject: BObj
+interface IB_Ifc {
+    val b_IfcObject: BImpl
     fun bFun(): String
 }
 
 // implementations of val properties of scope interfaces above
-class AObj {
+class AImpl {
 }
-class BObj {
+class BImpl {
 }
 
 // defining a scope that can call functions of both scope interfaces above
 // we need to define an extra interface, as we want to do something like this in the dsl:
-//   fun bothContexts(both_contextBlock: IAB_Context.() -> Unit): Sandwich {
+//   fun bothContexts(both_contextBlock: IAB_Ifc.() -> Unit): Sandwich {
 //       bothABObj.apply(both_contextBlock)
 //       return this
 //   }
-interface IAB_Context : IA_Context, IB_Context
+interface IAB_Ifc : IA_Ifc, IB_Ifc
 
 // implementation of the above combined scope interface
-class BothABObj : IAB_Context {
-    override val a_contextObject: AObj = AObj()
-    override val b_contextObject: BObj = BObj()
+class BothABImpl : IAB_Ifc {
+    override val a_IfcObject: AImpl = AImpl()
+    override val b_IfcObject: BImpl = BImpl()
     override fun aFun() = "aFun of both"
     override fun bFun() = "bFun of both"
 
@@ -47,13 +47,13 @@ class BothABObj : IAB_Context {
 
 // with kotlin "context receivers" see https://www.youtube.com/watch?v=GISPalIVdQY
 // you can define functions that are only "available" if a certain class is "in scope":
-context(IA_Context)
+context(IA_Ifc)
 fun a_contextFun() = "a_contextFun"
 
-context(IB_Context)
+context(IB_Ifc)
 fun b_contextFun() = "b_contextFun"
 
 // or with "classic" extension functions:
-fun IA_Context.a_extFun() = "a_extFun"
-fun IB_Context.b_extFun() = "b_extFun"
-fun IAB_Context.ab_extFun() = "ab_extFun"
+fun IA_Ifc.a_extFun() = "a_extFun"
+fun IB_Ifc.b_extFun() = "b_extFun"
+fun IAB_Ifc.ab_extFun() = "ab_extFun"

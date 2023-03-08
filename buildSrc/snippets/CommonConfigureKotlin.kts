@@ -1,76 +1,3 @@
-plugins {
-    kotlin("jvm") version BuildSrcGlobal.VersionKotlin
-    id("com.github.johnrengelman.shadow") version "shadow".pluginVersion()
-    application
-}
-
-group = "com.hoffi"
-version = "1.0.0"
-val artifactName by extra { project.name.toLowerCase().replace('_', '-') }
-val theMainClass by extra { "com.hoffi.dsl.AppKt" }
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    //implementation("io.github.microutils:kotlin-logging:2.0.6")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime".depAndVersion())
-    implementation("com.github.ajalt.clikt:clikt".depAndVersion())
-    //implementation(kotlin("reflect"))
-
-    runtimeOnly("org.jetbrains.kotlin:kotlin-main-kts:${BuildSrcGlobal.VersionKotlin}")
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:${BuildSrcGlobal.VersionKotlin}")
-    //runtimeOnly("net.java.dev.jna:jna:5.8.0")
-
-    testImplementation(kotlin("test-common"))
-    testImplementation(kotlin("test-annotations-common"))
-}
-
-application {
-    mainClass.set(theMainClass)
-}
-
-//kotlin {
-//    jvmToolchain(BuildSrcGlobal.jdkVersion)
-//}
-buildSrcCommonConfigureKotlin()
-
-tasks {
-    withType<Jar> {
-        archiveBaseName.set(artifactName)
-    }
-    shadowJar {
-        manifest { attributes["Main-Class"] = theMainClass }
-        archiveClassifier.set("fat")
-        mergeServiceFiles()
-        minimize()
-    }
-//    val build by existing {
-//        finalizedBy(shadowCreate)
-//    }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions{
-            //Will retain parameter names for Java reflection
-            javaParameters = true
-            kotlinOptions.freeCompilerArgs = listOf("-Xcontext-receivers")
-        }
-    }
-
-    withType<Test> {
-        buildSrcJvmTestConfig()
-    }
-}
-
-// Helper tasks to speed up things and don't waste time
-//=====================================================
-// 'c'ompile 'c'ommon
-val cc by tasks.registering {
-    dependsOn(
-        ":compileKotlin",
-        ":compileTestKotlin")
-}
-
 fun Project.buildSrcCommonConfigureKotlin() {
     val prj = this
     prj.plugins.withId("org.jetbrains.kotlin.multiplatform") {
@@ -119,20 +46,5 @@ fun Project.buildSrcCommonConfigureKotlin() {
                     .forEach { println("    ${project.name}: ${it.name}") }
             } }
         }
-    }
-}
-
-// ################################################################################################
-// #####    pure informational stuff on stdout    #################################################
-// ################################################################################################
-tasks.register<CheckVersionsTask>("checkVersions") // implemented in buildSrc/src/main/kotlin/Deps.kt
-tasks.register("printClasspath") {
-    group = "misc"
-    description = "print classpath"
-    doLast {
-        // filters only existing and non-empty dirs
-        project.configurations.getByName("runtimeClasspath").files
-            .filter { it.isDirectory && (it?.listFiles()?.isNotEmpty() ?: false) || it.isFile }
-            .forEach{ println(it) }
     }
 }

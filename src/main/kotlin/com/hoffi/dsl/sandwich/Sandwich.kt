@@ -16,18 +16,18 @@ class Sandwich {
     private val dressings = Dressings()
     private val sides = mutableMapOf<String, SideOrders>()
 
-    private val bothABObj = BothABObj()
+    private val bothABImpl = BothABImpl()
 
-    fun onlyContext_A(a_contextBlock: IA_Context.() -> Unit): Sandwich {
-        bothABObj.apply(a_contextBlock)
+    fun onlyContext_A(a_contextBlock: IA_Ifc.() -> Unit): Sandwich {
+        bothABImpl.apply(a_contextBlock)
         return this
     }
-    fun onlyContext_B(b_contextBlock: IB_Context.() -> Unit): Sandwich {
-        bothABObj.apply(b_contextBlock)
+    fun onlyContext_B(b_contextBlock: IB_Ifc.() -> Unit): Sandwich {
+        bothABImpl.apply(b_contextBlock)
         return this
     }
-    fun bothContexts(both_contextBlock: IAB_Context.() -> Unit): Sandwich {
-        bothABObj.apply(both_contextBlock)
+    fun bothContexts(both_contextBlock: IAB_Ifc.() -> Unit): Sandwich {
+        bothABImpl.apply(both_contextBlock)
         return this
     }
 

@@ -32,23 +32,29 @@ class App {
             bread = "baguette" // with bread "ciabatta"
 
 
-            onlyContext_A {// this: IA_Context ->
+            onlyContext_A {// this: IA_Ifc ->
+                a_IfcObject
+             // b_IfcObject
                 aFun()
-             // bFun()         // unresolved reference, as it doesn't exist, because we are in IA_Context here
+             // bFun()         // unresolved reference, as it doesn't exist, because we are in IA_Ifc here
                 a_contextFun()
-             // b_contextFun() // no required context receiver found: Cxt { context(IB_Context) ... }
+             // b_contextFun() // no required context receiver found: Cxt { context(IB_Ifc) ... }
                 a_extFun()
              // b_extFun()     // Unresolved reference. None of the following candidates is applicable because of receiver type mismatch
             }
-            onlyContext_B {// this: IB_Context ->
-             // aFun()         // unresolved reference, as it doesn't exist, because we are in IA_Context here
+            onlyContext_B {// this: IB_Ifc ->
+             // a_IfcObject
+                b_IfcObject
+             // aFun()         // unresolved reference, as it doesn't exist, because we are in IA_Ifc here
                 bFun()
-             // a_contextFun() // no required context receiver found: Cxt { context(IA_Context) ... }
+             // a_contextFun() // no required context receiver found: Cxt { context(IA_Ifc) ... }
                 b_contextFun()
              // a_extFun()     // Unresolved reference. None of the following candidates is applicable because of receiver type mismatch
                 b_extFun()
             }
-            bothContexts {// this: IAB_Context ->
+            bothContexts {// this: IAB_Ifc ->
+                a_IfcObject
+                b_IfcObject
                 aFun()
                 bFun()
                 a_contextFun()

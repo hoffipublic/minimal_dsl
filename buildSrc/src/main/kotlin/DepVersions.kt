@@ -28,14 +28,14 @@ object DepVersions {
         Dep.from("org.kodein.di:kodein-di:7.18.0", GROUP_CORE),
 
         Dep.from("com.bkahlert.koodies:koodies:1.9.7", GROUP_CONSOLE),
-        Dep.from("com.github.ajalt.clikt:clikt:3.5.1", GROUP_CONSOLE),
+        Dep.from("com.github.ajalt.clikt:clikt:3.5.2", GROUP_CONSOLE),
 
         Dep.from("com.h2database:h2:2.1.214", GROUP_DB),
         //Dep.from("org.postgresql:postgresql:42.5.4", GROUP_DB, versionRegex = "${THREEDIGITSs}\\.jre\\d*\$"),
         Dep.from("org.postgresql:postgresql:42.5.4", GROUP_DB),
 
         // __LATEST_COMPOSE_RELEASE_VERSION__ https://github.com/JetBrains/compose-jb/releases
-        Dep.from("org.jetbrains.compose:compose-gradle-plugin:1.3.0", GROUP_JETBRAINS, repo = JETBRAINSREPO),
+        Dep.from("org.jetbrains.compose:compose-gradle-plugin:${BuildSrcGlobal.Compose.composePluginVersion}", GROUP_JETBRAINS, repo = JETBRAINSREPO),
         Dep.from("org.jetbrains.exposed:exposed-core:0.41.1", GROUP_JETBRAINS),
         Dep.from("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4", GROUP_JETBRAINS),
         Dep.from("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0", GROUP_JETBRAINS),
@@ -50,7 +50,7 @@ object DepVersions {
         Dep.from("com.charleskorn.kaml:kaml:0.52.0", GROUP_SERIALIZATION),
         Dep.from("net.mamoe.yamlkt:yamlkt:0.12.0", GROUP_SERIALIZATION),
         Dep.from("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0", GROUP_SERIALIZATION),
-        Dep.from("org.yaml:snakeyaml:1.33", GROUP_SERIALIZATION),
+        Dep.from("org.yaml:snakeyaml:2.0", GROUP_SERIALIZATION),
 
         Dep.from("com.squareup:kotlinpoet:1.12.0", GROUP_SQUAREUP),
         Dep.from("com.squareup.okhttp3:okhttp:4.10.0", GROUP_SQUAREUP),
@@ -71,10 +71,10 @@ object DepVersions {
         Dep.from("org.hamcrest:hamcrest-library:2.2", GROUP_TESTING),
 
         Dep.from("com.rabbitmq:amqp-client:5.16.0", GROUP_WEB),
-        Dep.from("io.github.hakky54:sslcontext-kickstart:7.4.9", GROUP_WEB),
+        Dep.from("io.github.hakky54:sslcontext-kickstart:7.4.11", GROUP_WEB),
         Dep.from("io.github.resilience4j:resilience4j-core:2.0.2", GROUP_WEB),
-        Dep.from(  "io.ktor:ktor-server-core:2.2.3", GROUP_WEB),
-        Dep.from(  "io.ktor:ktor-client-core:2.2.3", GROUP_WEB),
+        Dep.from(  "io.ktor:ktor-server-core:2.2.4", GROUP_WEB),
+        Dep.from(  "io.ktor:ktor-client-core:2.2.4", GROUP_WEB),
         Dep.from("org.jsoup:jsoup:1.15.4", GROUP_WEB),
     )
     fun v(groupAndArtifact: String): String {
@@ -98,7 +98,7 @@ fun String.pluginVersion() = DepVersionPlugins.v(this)
 object DepVersionPlugins {
     val USED = mutableSetOf<DepPlugin>()
     val vSet = setOf<DepPlugin>(
-        DepPlugin("micronaut", "io.micronaut.application", version = "3.7.2"),
+        DepPlugin("micronaut", "io.micronaut.application", version = "3.7.4"),
         DepPlugin("shadow", "com.github.johnrengelman.shadow", version = "7.1.2"),
     )
     fun v(pluginName: String): String {
